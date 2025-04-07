@@ -1,0 +1,23 @@
+.reviewsio-reviews {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.reviewsio-review {
+    flex: 1 1 0;
+}
+
+.reviewsio-reviews .overall-rating {
+    width: 100%;
+}
+
+.reviewsio-review img.review-star {
+    width: 20px;
+}
+
+.reviewsio-reviews .reviewsio-star-rating svg path{
+    /* change the colour of the svgs to yellow     */
+    fill: yellow;
+
+}
