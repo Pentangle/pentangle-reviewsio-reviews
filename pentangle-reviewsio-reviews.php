@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: ReviewsIO Reviews Fetcher
  * Description: A plugin to fetch and display ReviewsIO reviews using ReviewsIO API, with settings in the WordPress dashboard and caching for better performance.
@@ -42,7 +43,7 @@ function prr_settings_page()
         echo '<div class="updated"><p>ReviewsIO cache cleared successfully!</p></div>';
     }
 
-    ?>
+?>
     <div class="wrap">
         <h1>ReviewsIO Settings</h1>
         <form method="post" action="options.php">
@@ -62,7 +63,7 @@ function prr_settings_page()
             <input type="submit" class="button-primary" value="Clear ReviewsIO Cache">
         </form>
     </div>
-    <?php
+<?php
 }
 
 // Register settings, sections, and fields
@@ -85,7 +86,6 @@ function prr_settings_init()
         'prr-settings',
         'prr_settings_section'
     );
-
 }
 
 add_action('admin_init', 'prr_settings_init');
@@ -112,15 +112,15 @@ function prr_options_section_callback()
 function prr_api_key_render()
 {
     $api_key = get_option('prr_api_key');
-    ?>
+?>
     <input type="text" name="prr_api_key" value="<?php echo esc_attr($api_key); ?>" style="width: 400px;" />
-    <?php
+<?php
 }
 
 function prr_place_id_render()
 {
     $place_id = get_option('prr_place_id');
-    ?>
+?>
     <input type="text" name="prr_place_id" value="<?php echo esc_attr($place_id); ?>" style="width: 400px;" />
     <?php
 }
@@ -215,7 +215,11 @@ function prr_display_reviewsio_reviews($atts)
 
     // Limit the number of reviews to display after filtering
     $prr_reviews = array_slice($data['timeline'], 0, $atts['number']);
-    $prr_review_data = ['rating' => $data['timeline'][$key]['_source']['rating'], 'user_ratings_total' => $data['stats']['average_rating']];
+    $prr_review_data = [
+        'rating' => $data['timeline'][$key]['_source']['rating'],
+        'user_ratings_total' => $data['stats']['average_rating'],
+        'total_reviews' => $data['stats']['review_count'],
+    ];
 
     // Start outputting the reviews in HTML
     ob_start();
@@ -226,25 +230,24 @@ function prr_display_reviewsio_reviews($atts)
         pentangle_reviewsio_review_css();
         echo '<div class="reviewsio-reviews">';
         foreach ($prr_reviews as $review) {
-            ?>
+    ?>
             <div class="reviewsio-review">
-                <p><strong><?= esc_html($review['_source']['author']); ?></strong> <?= (isset($review['_source']['reviewer_desc']) && $review['_source']['reviewer_desc']) ? " - ".esc_html($review['_source']['reviewer_desc']) : ""; ?></p>
+                <p><strong><?= esc_html($review['_source']['author']); ?></strong> <?= (isset($review['_source']['reviewer_desc']) && $review['_source']['reviewer_desc']) ? " - " . esc_html($review['_source']['reviewer_desc']) : ""; ?></p>
                 <p>Rating: <?= $review['_source']['stars']; ?></p>
                 <p><?= esc_html($review['_source']['comments']); ?></p>
                 <p><em><?= esc_html($review['_source']['human_date']) ?></em></p>
             </div>
             <hr />
-            <?php
+<?php
         }
 
         //create a link to the google_g_icon_download.png in the plugin folder
         echo '<div class="reviewsio-overall-rating">';
         echo '<img src="https://assets.reviews.io/img/all-global-assets/logo/reviewsio-logo.svg" alt="ReviewsIO Reviews" style="width: 100px; height: 100px;">';
-        echo '<p>Average Rating: ' . $prr_review_data['rating'] . ' out of 5 based on ' . $prr_review_data['user_ratings_total'] . ' reviews</p>';
-        echo '<p><a href="https://www.reviews.co.uk/company-reviews/store/'. $api_key .'" target="_blank">Read more reviews on ReviewsIO</a></p>';
+        echo '<p>Average Rating: ' . $prr_review_data['user_ratings_total'] . ' out of 5 based on ' . $prr_review_data['total_reviews'] . ' reviews</p>';
+        echo '<p><a href="https://www.reviews.co.uk/company-reviews/store/' . $api_key . '" target="_blank">Read more reviews on ReviewsIO</a></p>';
         echo '</div>';
         echo '</div>';
-
     }
 
 
@@ -276,10 +279,9 @@ function prr_generate_stars($rating)
         }
 
         //$file = ($i <= $rating) ? 'star-full' : 'star-empty';
-//        $stars .= '<img src="' . plugin_dir_url(__FILE__) . $file . '.svg" class="review-star">';
+        //        $stars .= '<img src="' . plugin_dir_url(__FILE__) . $file . '.svg" class="review-star">';
 
         $stars .= file_get_contents(plugin_dir_path(__FILE__) . $file . '.svg');
-
     }
     $stars .= '</div>';
     return $stars;
