@@ -1,0 +1,26 @@
+name: Release Plugin Zip
+
+on:
+  workflow_dispatch:
+  release:
+    types: published
+
+jobs:
+  create-and-upload-zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Release Zip
+        run: |
+          # Zip all files, excluding .gitignore and the .github folder
+          zip -r pentangle-reviewsio-reviews.zip . -x "*.gitignore" -x ".github/*"
+
+      - name: Create GitHub Release and upload asset
+        id: release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: pentangle-reviewsio-reviews.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
