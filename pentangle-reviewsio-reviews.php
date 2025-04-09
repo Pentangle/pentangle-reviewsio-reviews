@@ -290,11 +290,7 @@ function prr_generate_stars($rating)
 add_action('init', 'pentangle_activate_wp');
 function pentangle_activate_wp()
 {
-    require_once('wp_autoupdate.php');      // File which contains the Class below
-    $pentangle_plugin_current_version = '1.3';
-    $pentangle_plugin_remote_path = 'https://scripts.pentangle.co.uk/pentangle-reviewsio-reviews/update.php';
-    $pentangle_plugin_slug = plugin_basename(__FILE__);
-    new wp_auto_update($pentangle_plugin_current_version, $pentangle_plugin_remote_path, $pentangle_plugin_slug);
+    require_once('wp_autoupdate.php');
 }
 
 // Register the shortcode [google_reviews number=""]
