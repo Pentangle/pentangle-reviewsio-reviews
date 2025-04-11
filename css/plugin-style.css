@@ -21,3 +21,11 @@
     fill: yellow;
 
 }
+
+.reviews-io-bg-star {
+    fill: #ccc;
+}
+
+.reviews-io-star {
+    fill: #000;
+}
