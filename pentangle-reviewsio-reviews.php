@@ -3,7 +3,7 @@
 /**
  * Plugin Name: ReviewsIO Reviews Fetcher
  * Description: A plugin to fetch and display ReviewsIO reviews using ReviewsIO API, with settings in the WordPress dashboard and caching for better performance.
- * Version: 1.3
+ * Version: 1.4
  * Author: Pentangle Technology Limited
  */
 
