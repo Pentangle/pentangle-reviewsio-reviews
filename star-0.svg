@@ -2,17 +2,15 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg width="100%" height="100%" viewBox="0 0 20 19" xmlns="http://www.w3.org/2000/svg">
     <defs>
-        <!-- Adjusted star path for a sharper look -->
-        <symbol id="pointy-star" viewBox="0 0 24 20">
-            <path d="M12,0L15,7.2L23.5,7.6L17.2,12.8L19.4,20L12,15.8L4.6,20L6.8,12.8L0.5,7.6L9,7.2L12,0Z"/>
-        </symbol>
-
         <!-- Clip paths for different fill levels -->
         <clipPath id="clip-100"><rect x="0" y="0" width="100%" height="100%" /></clipPath>
         <clipPath id="clip-75"><rect x="0" y="0" width="75%" height="100%" /></clipPath>
         <clipPath id="clip-50"><rect x="0" y="0" width="50%" height="100%" /></clipPath>
         <clipPath id="clip-25"><rect x="0" y="0" width="25%" height="100%" /></clipPath>
+        <clipPath id="clip-0"><rect x="0" y="0" width="0%" height="100%" /></clipPath>
     </defs>
-    <path d="M10,15.27L16.18,19L14.54,11.97L20,7.24L12.81,6.63L10,0L7.19,6.63L0,7.24L5.46,11.97L3.82,19L10,15.27Z"
-          clip-path="url(#clip-100)" />
+    <path class="reviews-io-bg-star" d="M10,15.27L16.18,19L14.54,11.97L20,7.24L12.81,6.63L10,0L7.19,6.63L0,7.24L5.46,11.97L3.82,19L10,15.27Z"
+          fill="#ccc" />
+    <path class="reviews-io-star" d="M10,15.27L16.18,19L14.54,11.97L20,7.24L12.81,6.63L10,0L7.19,6.63L0,7.24L5.46,11.97L3.82,19L10,15.27Z"
+          clip-path="url(#clip-0)" />
 </svg>

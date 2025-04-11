@@ -320,15 +320,15 @@ function prr_generate_stars($rating)
         //check if the rating is less than the current star and change the file to star-empty or star-half for any over 0.5
 
         if ($rating - $i >= 1) {
-            $file = 'star-full';
-        } elseif ($rating - $i >= 0.25) {
-            $file = 'star-cat';
-        } elseif ($rating - $i >= 0.5) {
-            $file = 'star-half';
+            $file = 'star-100';
         } elseif ($rating - $i >= 0.75) {
-            $file = 'star-cat';
+            $file = 'star-75';
+        } elseif ($rating - $i >= 0.5) {
+            $file = 'star-50';
+        } elseif ($rating - $i >= 0.25) {
+            $file = 'star-25';
         } else {
-            $file = 'star-empty';
+            $file = 'star-0';
         }
 
         $stars .= file_get_contents(plugin_dir_path(__FILE__) . $file . '.svg');
