@@ -137,13 +137,52 @@ function prr_clear_cache()
     $results = $wpdb->query($sql);
 }
 
+function prr_display_reviewsio_rating_bar($atts)
+{
 
+
+    //check if there is a file called pentangle-google-reviews.php in the theme folder
+
+    $template = 'pentangle-reviews-io-rating-bar-widget';
+
+    if (isset($atts['template'])) {
+        $template = $atts['template'];
+    }
+
+    $data = prr_get_data();
+
+    $prr_review_data = [
+        'user_ratings_total' => $data['stats']['average_rating'],
+        'total_reviews' => $data['stats']['review_count'],
+    ];
+
+    // Start outputting the reviews in HTML
+    ob_start();
+
+    if (file_exists(get_template_directory() . '/' . $template . '.php')) {
+        include get_template_directory() . '/' . $template . '.php';
+    } else {
+        pentangle_reviewsio_review_css();
+        echo '
+        <div class="reviews-io-rating-bar-widget">
+        
+        <img src="https://assets.reviews.io/img/all-global-assets/logo/reviewsio-logo.svg" alt="REVIEWS.io" height="118" width="19" loading="lazy" decoding="async" class="R-PlatformIcon R-PlatformIcon--xxs u-marginBottom--xxs u-marginRight--sm">
+        
+        '.prr_generate_stars($prr_review_data["user_ratings_total"]).'
+        
+        '.$prr_review_data["user_ratings_total"].' Based on '.$prr_review_data["total_reviews"].' reviews
+        
+        </div>
+       
+        ';
+    }
+
+    return ob_get_clean();
+}
 // Shortcode to display Google Reviews
 function prr_display_reviewsio_reviews($atts)
 {
-    // Get API Key and Place ID from the options saved in the dashboard
     $api_key = get_option('prr_api_key');
-
     //check if there is a file called pentangle-google-reviews.php in the theme folder
 
     $template = 'pentangle-reviewsio-reviews';
@@ -152,11 +191,6 @@ function prr_display_reviewsio_reviews($atts)
         $template = $atts['template'];
     }
 
-
-    // If API Key or Place ID is missing, return an error message
-    if (empty($api_key)) {
-        return '<p>Error: API key is not set in the settings page.</p>';
-    }
 
     // Shortcode attributes to override settings if provided
     $atts = shortcode_atts(
@@ -167,47 +201,7 @@ function prr_display_reviewsio_reviews($atts)
         $atts
     );
 
-    // Cache key to store/retrieve the reviews JSON
-    $cache_key = 'prr_reviewsio_reviews_data';
-
-    // Check if cached JSON data exists and is not expired (5-minute expiration)
-    $cached_data = get_transient($cache_key);
-
-    // If cached data exists, decode it
-    if ($cached_data) {
-        $data = json_decode($cached_data, true);
-    } else {
-        // Call the ReviewsIO API to fetch reviews
-        $url = "https://api.reviews.co.uk/timeline/data?type=store_review&store={$api_key}&sort=date_desc&page=1&per_page=100&enable_avatars=false&include_subrating_breakdown=1&branch=&tag=&include_product_reviews=1&sku=&include_local_reviews=1&lang=en";
-
-        $response = wp_remote_get($url);
-
-        // Check for errors in the API response
-        if (is_wp_error($response)) {
-            return '<p>Error fetching reviews.</p>';
-        }
-
-        // Only proceed if we get a 200 OK response
-        if (wp_remote_retrieve_response_code($response) === 200) {
-            // Decode the JSON response
-            $body = wp_remote_retrieve_body($response);
-            $data = json_decode($body, true);
-
-            // Check if there are reviews in the response
-            if (empty($data['timeline'])) {
-
-                //write the response to the wp error log
-                error_log($url);
-                error_log(print_r($data, 1));
-                return '<p>No reviews found for this location.</p>';
-            }
-
-            // Cache the JSON response for 5 minutes (300 seconds)
-            set_transient($cache_key, $body, 5 * MINUTE_IN_SECONDS);
-        } else {
-            return '<p>Error: Could not retrieve valid reviews data from the API.</p>';
-        }
-    }
+    $data = prr_get_data();
 
     foreach ($data['timeline'] as $key => $review) {
         $data['timeline'][$key]['_source']['stars'] = prr_generate_stars($review['_source']['rating']);
@@ -254,6 +248,60 @@ function prr_display_reviewsio_reviews($atts)
     return ob_get_clean();
 }
 
+function prr_get_data()
+{
+
+    // Get API Key and Place ID from the options saved in the dashboard
+    $api_key = get_option('prr_api_key');
+
+    // If API Key or Place ID is missing, return an error message
+    if (empty($api_key)) {
+        return '<p>Error: API key is not set in the settings page.</p>';
+    }
+    // Cache key to store/retrieve the reviews JSON
+    $cache_key = 'prr_reviewsio_reviews_data';
+
+    // Check if cached JSON data exists and is not expired (5-minute expiration)
+    $cached_data = get_transient($cache_key.'_'.$api_key);
+
+    // If cached data exists, decode it
+    if ($cached_data) {
+        $data = json_decode($cached_data, true);
+    } else {
+        // Call the ReviewsIO API to fetch reviews
+        $url = "https://api.reviews.co.uk/timeline/data?type=store_review&store={$api_key}&sort=date_desc&page=1&per_page=100&enable_avatars=false&include_subrating_breakdown=1&branch=&tag=&include_product_reviews=1&sku=&include_local_reviews=1&lang=en";
+
+        $response = wp_remote_get($url);
+
+        // Check for errors in the API response
+        if (is_wp_error($response)) {
+            return '<p>Error fetching reviews.</p>';
+        }
+
+        // Only proceed if we get a 200 OK response
+        if (wp_remote_retrieve_response_code($response) === 200) {
+            // Decode the JSON response
+            $body = wp_remote_retrieve_body($response);
+            $data = json_decode($body, true);
+
+            // Check if there are reviews in the response
+            if (empty($data['timeline'])) {
+
+                //write the response to the wp error log
+                error_log($url);
+                error_log(print_r($data, 1));
+                return '<p>No reviews found for this location.</p>';
+            }
+
+            // Cache the JSON response for 5 minutes (300 seconds)
+            set_transient($cache_key, $body, 5 * 60);
+        } else {
+            return '<p>Error: Could not retrieve valid reviews data from the API.</p>';
+        }
+    }
+
+}
+
 function pentangle_reviewsio_review_css()
 {
     $plugin_url = plugin_dir_url(__FILE__);
@@ -272,8 +320,12 @@ function prr_generate_stars($rating)
 
         if ($rating - $i >= 1) {
             $file = 'star-full';
-        } elseif ($rating - $i > 0.5) {
+        } elseif ($rating - $i >= 0.25) {
+            $file = 'star-cat';
+        } elseif ($rating - $i >= 0.5) {
             $file = 'star-half';
+        } elseif ($rating - $i >= 0.75) {
+            $file = 'star-cat';
         } else {
             $file = 'star-empty';
         }
@@ -295,3 +347,4 @@ function pentangle_activate_wp()
 
 // Register the shortcode [google_reviews number=""]
 add_shortcode('reviewsio_reviews', 'prr_display_reviewsio_reviews');
+add_shortcode('reviewsio_rating_bar', 'prr_display_reviewsio_rating_bar');
