@@ -22,10 +22,10 @@
 
 }
 
-.reviews-io-bg-star {
+.reviews-io-rating-bar-widget .reviews-io-bg-star {
     fill: #ccc;
 }
 
-.reviews-io-star {
+.reviews-io-rating-bar-widget .reviews-io-star {
     fill: #000;
 }
