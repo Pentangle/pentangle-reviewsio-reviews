@@ -299,6 +299,8 @@ function prr_get_data()
         }
     }
 
+    return $data;
+
 }
 
 function pentangle_reviewsio_review_css()
