@@ -140,7 +140,6 @@ function prr_clear_cache()
 function prr_display_reviewsio_rating_bar($atts)
 {
 
-
     //check if there is a file called pentangle-google-reviews.php in the theme folder
 
     $template = 'pentangle-reviews-io-rating-bar-widget';
@@ -329,9 +328,6 @@ function prr_generate_stars($rating)
         } else {
             $file = 'star-empty';
         }
-
-        //$file = ($i <= $rating) ? 'star-full' : 'star-empty';
-        //        $stars .= '<img src="' . plugin_dir_url(__FILE__) . $file . '.svg" class="review-star">';
 
         $stars .= file_get_contents(plugin_dir_path(__FILE__) . $file . '.svg');
     }
